@@ -86,7 +86,7 @@ def cdl(args)
   end
 
   data = read_git_data
-  (data[:data][:checkouts][get_current_git_repo] || []).each_with_index do |checkout, index|
+  (data[:data][:checkouts][get_current_git_repo] || [])[0..9].each_with_index do |checkout, index|
     puts(sprintf(
            "%2d   %-50s  %-20s",
            index + 1,
@@ -196,15 +196,19 @@ def get_current_branch
   m[1] 
 end
 
-MAX_CHECKOUTS = 15
+MAX_CHECKOUTS = 100
 
 def add_to_branch_history(branch)
   data, cur_checkouts = load_git_data(branch)
   # puts "cur_checkouts = #{cur_checkouts}"
   # puts "data[:data] = #{data[:data]}"
   # puts "data[:data][:checkouts] = #{data[:data][:checkouts]}"
-  data[:data][:checkouts][get_current_git_repo] = [{ branch: branch, time: Time.now }] +  cur_checkouts[0..(MAX_CHECKOUTS - 2)]
+  data[:data][:checkouts][get_current_git_repo] = [{ branch: branch, time: Time.now }] +  without_branch(cur_checkouts, branch)[0..(MAX_CHECKOUTS - 2)]
   save_git_data(data)
+end
+
+def without_branch(cur_checkouts, branch)
+  cur_checkouts.reject{|checkout_info| checkout_info[:branch] == branch}
 end
 
 def remove_from_branch_history(branch)
