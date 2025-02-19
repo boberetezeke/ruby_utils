@@ -1,4 +1,4 @@
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 
 def usage
   puts "USAGE: #{$0} file_pattern [directory]"
